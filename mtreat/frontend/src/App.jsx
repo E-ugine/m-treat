@@ -9,7 +9,7 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/register" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Router>
