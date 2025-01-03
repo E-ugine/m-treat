@@ -23,6 +23,20 @@ CORS_ALLOWED_ORIGINS = [
 # )
    
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+AUTH_USER_MODEL = 'patients.Patient'
+
+# Override default Token model
+REST_AUTH_TOKEN_MODEL = 'patients.CustomToken'
+
 
 
 INSTALLED_APPS = [

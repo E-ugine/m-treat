@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { useNavigate } from 'react-router-dom';  // Use useNavigate instead of useHistory
 
 const Dashboard = () => {
   const [patient, setPatient] = useState({});
@@ -17,6 +18,8 @@ const Dashboard = () => {
 
   // Loading state
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();  // Use useNavigate for redirection
 
   useEffect(() => {
     // Fetch data
@@ -72,6 +75,12 @@ const Dashboard = () => {
     setEditableName(patient.name);
     setEditablePhone(patient.phone);
     setIsEditing(false); // Cancel edit and revert changes
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');  // Remove token from local storage
+    navigate('/');  // Redirect to login page using useNavigate
   };
 
   return (
@@ -195,6 +204,16 @@ const Dashboard = () => {
             ) : (
               <p>No medical history available</p>
             )}
+          </div>
+
+          {/* Logout Button */}
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleLogout}
+              className="p-2 bg-red-500 text-white rounded-lg"
+            >
+              Logout
+            </button>
           </div>
         </div>
       )}

@@ -1,36 +1,35 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authtoken.models import Token
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
-from .models import Patient
+from rest_framework.permissions import AllowAny
+from django.contrib.auth.hashers import make_password, check_password
+from .models import Patient, CustomToken
 from .serializers import PatientSerializer
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
+@permission_classes([AllowAny])  # Allow public access for all methods
 def patient_handler(request, pk=None):
     """
     Handle GET, POST, PUT, and DELETE requests for patients.
-    - GET: Retrieve patient(s)
-    - POST: Create a new patient
-    - PUT: Update a specific patient
-    - DELETE: Delete a specific patient
+    - GET: Retrieve patient(s) (Public access)
+    - POST: Create a new patient (Public access)
+    - PUT: Update a specific patient (Public access)
+    - DELETE: Delete a specific patient (Public access)
     """
     if request.method == 'GET':
+        # List all patients or retrieve a specific patient
         if pk:
-            # Retrieve a specific patient
             patient = get_object_or_404(Patient, pk=pk)
             serializer = PatientSerializer(patient)
             return Response(serializer.data)
         else:
-            # List all patients
             patients = Patient.objects.all()
             serializer = PatientSerializer(patients, many=True)
             return Response(serializer.data)
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # Create a new patient
         data = request.data
         if pk:
@@ -72,6 +71,7 @@ def patient_handler(request, pk=None):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])  # Allow public access to the login endpoint
 def login(request):
     """
     Handle POST requests to authenticate a user and get a token.
@@ -79,17 +79,25 @@ def login(request):
     email = request.data.get('email')
     password = request.data.get('password')
 
-    # Get the user
+    # Validate email and password presence
+    if not email or not password:
+        return Response({'detail': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Get the patient by email
     try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
+        patient = Patient.objects.get(email=email)
+    except Patient.DoesNotExist:
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check password
-    if not user.check_password(password):
+    # Check the password
+    if not check_password(password, patient.password):
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Get or create the user's token
-    token, created = Token.objects.get_or_create(user=user)
+    # Get or create a token for the patient
+    token, created = CustomToken.objects.get_or_create(user=patient)
 
-    return Response({'token': token.key, 'email': user.email, 'name': user.username})
+    return Response({
+        'token': str(token.key),
+        'email': patient.email,
+        'name': patient.name
+    })
