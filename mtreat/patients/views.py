@@ -76,5 +76,20 @@ def login(request):
     """
     Handle POST requests to authenticate a user and get a token.
     """
-    from rest_framework.authtoken.views import obtain_auth_token
-    return obtain_auth_token(request)
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    # Get the user
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check password
+    if not user.check_password(password):
+        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Get or create the user's token
+    token, created = Token.objects.get_or_create(user=user)
+
+    return Response({'token': token.key, 'email': user.email, 'name': user.username})

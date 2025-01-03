@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setToken } from "../redux/AuthSlice"; 
+import { setToken } from "../redux/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,7 +16,7 @@ export default function Login() {
     const payload = { email, password };
 
     try {
-      const response = await fetch("/api/token/", {
+      const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,8 +26,9 @@ export default function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        dispatch(setToken(data.access)); // Store token in Redux
+        dispatch(setToken(data.token)); // Save the token in Redux
         alert("Login successful!");
+        navigate("/dashboard"); // Redirect to the dashboard
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.detail || "Invalid email or password.");
@@ -33,6 +36,10 @@ export default function Login() {
     } catch (error) {
       setErrorMessage("Something went wrong. Please try again.");
     }
+  };
+
+  const handleSignUpClick = () => {
+    navigate("/register"); // Navigate to the registration page
   };
 
   return (
@@ -102,6 +109,17 @@ export default function Login() {
                     Login
                   </button>
                 </form>
+              </div>
+              <div className="text-center mt-4">
+                <p className="text-sm">
+                  Don’t have an account?{" "}
+                  <button
+                    onClick={handleSignUpClick}
+                    className="text-indigo-500 underline hover:text-indigo-700"
+                  >
+                    Sign Up
+                  </button>
+                </p>
               </div>
             </div>
           </div>

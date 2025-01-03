@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerPatient, resetState } from "../redux/RegistrationSlice";
+import { useNavigate } from "react-router-dom"; // For navigation
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -11,8 +12,9 @@ export default function SignUp() {
     confirmPassword: "",
   });
 
-  const [passwordError, setPasswordError] = useState(""); 
+  const [passwordError, setPasswordError] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Hook for navigation
   const { loading, success, error } = useSelector((state) => state.registration);
 
   const handleChange = (e) => {
@@ -42,6 +44,10 @@ export default function SignUp() {
       password: "",
       confirmPassword: "",
     });
+  };
+
+  const handleLoginClick = () => {
+    navigate("/login"); // Navigate to the login page
   };
 
   return (
@@ -171,6 +177,17 @@ export default function SignUp() {
                   {success && <p className="mt-4 text-green-500">{success}</p>}
                   {error && <p className="mt-4 text-red-500">{error}</p>}
                 </form>
+              </div>
+              <div className="text-center mt-4">
+                <p className="text-sm">
+                  Already have an account?{" "}
+                  <button
+                    onClick={handleLoginClick}
+                    className="text-indigo-500 underline hover:text-indigo-700"
+                  >
+                    Login
+                  </button>
+                </p>
               </div>
             </div>
           </div>
