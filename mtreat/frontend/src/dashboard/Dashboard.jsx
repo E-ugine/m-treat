@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { useNavigate } from 'react-router-dom';  // Use useNavigate instead of useHistory
+import { useNavigate } from 'react-router-dom';  
 
 const Dashboard = () => {
   const [patient, setPatient] = useState({});
@@ -14,9 +14,8 @@ const Dashboard = () => {
   // State for editable fields
   const [editableName, setEditableName] = useState('');
   const [editablePhone, setEditablePhone] = useState('');
-  const [isEditing, setIsEditing] = useState(false);  // Track if the user is editing
+  const [isEditing, setIsEditing] = useState(false);  
 
-  // Loading state
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();  // Use useNavigate for redirection
@@ -79,13 +78,13 @@ const Dashboard = () => {
 
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('token');  // Remove token from local storage
+    localStorage.removeItem('token'); 
     navigate('/');  // Redirect to login page using useNavigate
   };
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Patient Dashboard</h2>
+    <div className="p-6 bg-gray-800 rounded-lg max-w-6xl mx-auto">
+      <h2 className="text-2xl font-semibold text-center text-yellow-800 mb-6">My Information</h2>
 
       {loading ? (
         <p>Loading...</p>
@@ -210,7 +209,7 @@ const Dashboard = () => {
           <div className="mt-4 text-center">
             <button
               onClick={handleLogout}
-              className="p-2 bg-red-500 text-white rounded-lg"
+              className="p-2 bg-yellow-500 text-white rounded-lg"
             >
               Logout
             </button>
