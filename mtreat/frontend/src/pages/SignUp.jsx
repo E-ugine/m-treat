@@ -11,7 +11,7 @@ export default function SignUp() {
     confirmPassword: "",
   });
 
-  const [passwordError, setPasswordError] = useState(""); // For password mismatch
+  const [passwordError, setPasswordError] = useState(""); 
   const dispatch = useDispatch();
   const { loading, success, error } = useSelector((state) => state.registration);
 
